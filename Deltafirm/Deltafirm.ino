@@ -10,8 +10,8 @@ Servo motor;          // Servo object to control the motor
 // Define the UART pins and baud rate for servo communication
 #define S_RXD 18
 #define S_TXD 19
-#define stepPin 35
-#define dirPin 34
+#define stepPin 26
+#define dirPin 27
 // Define the servo position range for ST servos
 const int ST_MIN_POSITION = 0;
 const int ST_MAX_POSITION = 4095;
@@ -23,12 +23,12 @@ AccelStepper stepper = AccelStepper(AccelStepper::DRIVER, stepPin, dirPin);
 const float ST_SERVO_RESOLUTION = (ST_MAX_POSITION - ST_MIN_POSITION) / 360.0f;
 
 // Define the angle range for each joint
-const float j_1_min = -50.0f;
-const float j_1_max = 50.0f;
-const float j_2_min = -50.0f;
-const float j_2_max = 50.0f;
-const float j_3_min = -50.0f;
-const float j_3_max = 50.0f;
+const float j_1_min = -90.0f;
+const float j_1_max = 90.0f;
+const float j_2_min = -90.0f;
+const float j_2_max = 90.0f;
+const float j_3_min = -90.0f;
+const float j_3_max = 90.0f;
 
 // Define home positions for each motor (in degrees)
 const float HOME_POSITIONS[3] = {0.0f, 0.0f, 0.0f};
