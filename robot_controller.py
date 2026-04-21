@@ -12,8 +12,8 @@ class ESP32Robot:
         self.MAX_Y_REACH     = 100.0
 
         # ── Z HEIGHTS ────────────────────────────────────────────────────────
-        self.SAFE_Z  = -10.0
-        self.PICK_Z  = -57.0
+        self.SAFE_Z  = -30.0
+        self.PICK_Z  = -100.0
         self.THROW_Z = -55.0    # deeper into bin — less stone above jaws = less wedging
 
         # ── TRASH BOX POSITION ───────────────────────────────────────────────
@@ -31,7 +31,7 @@ class ESP32Robot:
         # Compensates for belt movement during MOVE_DOWN_T descent only.
         # Tune: arm touches behind object → increase
         #       arm touches ahead of object → decrease
-        self.LEAD_TIME = 0.0
+        self.LEAD_TIME = 0.4
 
         # ── MOTOR SPEED ──────────────────────────────────────────────────────
         self.MOTOR_SPEED = 5000
