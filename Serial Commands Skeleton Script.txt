@@ -1,0 +1,329 @@
+"""
+Serial Commands Skeleton Script
+================================
+This script documents all the commands and their formats that are sent via pyserial
+to the Delta Robot firmware. Use this as a reference for command formats.
+
+All commands are sent with a newline character ('\n') appended.
+"""
+
+import serial
+import time
+
+
+def send_command(ser: serial.Serial, command: str):
+    """
+    Send a command to the serial port.
+    
+    Args:
+        ser: Serial port object
+        command: Command string to send (newline will be appended)
+    """
+    ser.write((command + "\n").encode('utf-8'))
+    ser.flush()
+
+
+# ============================================================================
+# ROBOT CONTROL COMMANDS
+# ============================================================================
+
+def home(ser: serial.Serial):
+    """Return robot to home position"""
+    send_command(ser, "home")
+
+
+def stop(ser: serial.Serial):
+    """Stop looprun or circular looprun motion"""
+    send_command(ser, "stop")
+
+
+def run(ser: serial.Serial):
+    """Execute saved interpolation points once"""
+    send_command(ser, "run")
+
+
+def looprun(ser: serial.Serial):
+    """
+    Loop through saved interpolation points continuously
+    Run until a 'stop' command is sent.
+    
+    Args:
+        ser: Serial port object
+    """
+    send_command(ser, "looprun")
+
+
+# ============================================================================
+# INTERPOLATION MODE COMMANDS
+# ============================================================================
+
+def set_interpolation_mode(ser: serial.Serial):
+    """
+    Enter interpolation mode and reset the interpolation index
+    
+    Args:
+        ser: Serial port object
+    """
+    send_command(ser, "interpolation")
+
+
+def save_point(ser: serial.Serial, x: float, y: float, z: float):
+    """
+    Save an interpolation point (Firmware currently only supports 2 points for linear interpolation)
+    
+    Args:
+        ser: Serial port object
+        x: X coordinate
+        y: Y coordinate
+        z: Z coordinate
+    """
+    point_str = f"[{x},{y},{z}]"
+    send_command(ser, f"save {point_str}")
+
+
+def circle(ser: serial.Serial, i: float, j: float, clockwise: bool):
+    """
+    Run circular interpolation
+    
+    Args:
+        ser: Serial port object
+        i: Center offset i
+        j: Center offset j
+        clockwise: True for clockwise, False for counter-clockwise
+    """
+    cw_int = 1 if clockwise else 0
+    send_command(ser, f"circle {i},{j},{cw_int}")
+
+
+def loopruncircle(ser: serial.Serial, i: float, j: float, clockwise: bool):
+    """
+    Run continuous circular interpolation. Stops when 'stop' is sent.
+    
+    Args:
+        ser: Serial port object
+        i: Center offset i
+        j: Center offset j
+        clockwise: True for clockwise, False for counter-clockwise
+    """
+    cw_int = 1 if clockwise else 0
+    send_command(ser, f"loopruncircle {i},{j},{cw_int}")
+
+
+def bezier(ser: serial.Serial, p1_x: float, p1_y: float, p1_z: float, p2_x: float, p2_y: float, p2_z: float):
+    """
+    Run Bezier curve interpolation with two control points
+    
+    Args:
+        ser: Serial port object
+        p1_x, p1_y, p1_z: Coordinates for first control point
+        p2_x, p2_y, p2_z: Coordinates for second control point
+    """
+    send_command(ser, f"bezier [{p1_x},{p1_y},{p1_z}],[{p2_x},{p2_y},{p2_z}]")
+
+
+# ============================================================================
+# KINEMATICS COMMANDS
+# ============================================================================
+
+def move_ik(ser: serial.Serial, x: float, y: float, z: float):
+    """
+    Move robot using inverse kinematics (disables interpolation mode)
+    
+    Args:
+        ser: Serial port object
+        x: X coordinate
+        y: Y coordinate
+        z: Z coordinate
+    """
+    send_command(ser, f"IK [{x},{y},{z}]")
+
+
+def move_fk(ser: serial.Serial, theta1: float, theta2: float, theta3: float):
+    """
+    Move robot using forward kinematics angles (disables interpolation mode)
+    
+    Args:
+        ser: Serial port object
+        theta1: Joint 1 angle
+        theta2: Joint 2 angle
+        theta3: Joint 3 angle
+    """
+    send_command(ser, f"FK [{theta1},{theta2},{theta3}]")
+
+
+def move(ser: serial.Serial, direction: str):
+    """
+    Move robot continuously in different directions (Stubbed in firmware)
+    
+    Args:
+        ser: Serial port object
+        direction: Command string like 'MOVE +X', 'MOVE -Y', etc.
+    """
+    send_command(ser, f"move {direction}")
+
+
+# ============================================================================
+# GRIPPER COMMANDS
+# ============================================================================
+
+def suck(ser: serial.Serial):
+    """Activate suction/vacuum gripper and motor"""
+    send_command(ser, "suck")
+
+
+def release(ser: serial.Serial):
+    """Release vacuum/suction gripper and stop motor"""
+    send_command(ser, "release")
+
+
+# ============================================================================
+# CONVEYOR BELT COMMANDS
+# ============================================================================
+
+def start_conveyor(ser: serial.Serial):
+    """Start the conveyor belt stepper motor"""
+    send_command(ser, "StartStepper")
+
+
+def stop_conveyor(ser: serial.Serial):
+    """Stop the conveyor belt stepper motor"""
+    send_command(ser, "StopStepper")
+
+
+def set_conveyor_speed(ser: serial.Serial, speed: float):
+    """
+    Set conveyor belt speed
+    
+    Args:
+        ser: Serial port object
+        speed: Speed value (1-2000 steps/s)
+    """
+    send_command(ser, f"SetSpeed {speed}")
+
+
+def set_conveyor_acceleration(ser: serial.Serial, acceleration: float):
+    """
+    Set conveyor belt acceleration
+    
+    Args:
+        ser: Serial port object
+        acceleration: Acceleration value (1-2000 steps/s²)
+    """
+    send_command(ser, f"SetAcceleration {acceleration}")
+
+
+def change_conveyor_direction(ser: serial.Serial):
+    """Toggle conveyor belt direction"""
+    send_command(ser, "ChangeDirection")
+
+
+# ============================================================================
+# EXAMPLE USAGE
+# ============================================================================
+
+def example_usage():
+    """
+    Example of how to use the commands
+    """
+    # Connect to serial port
+    port = "/dev/ttyUSB0"  # Linux
+    # port = "COM3"  # Windows
+    baud_rate = 115200
+    
+    try:
+        ser = serial.Serial(port, baud_rate, timeout=1)
+        ser.flush()
+        time.sleep(0.5)  # Wait for connection to stabilize
+        
+        # Enter interpolation mode
+        set_interpolation_mode(ser)
+        time.sleep(0.2)
+        
+        # Firmware stores up to 2 points for linear interpolation
+        save_point(ser, 100.0, 200.0, 150.0)
+        time.sleep(0.2)
+        save_point(ser, 150.0, 250.0, 160.0)
+        time.sleep(0.2)
+        
+        # Run the linear interpolation once
+        run(ser)
+        time.sleep(0.2)
+        
+        # Run circular interpolation
+        circle(ser, 50.0, 50.0, True)
+        time.sleep(0.2)
+
+        # Move using IK
+        move_ik(ser, 120.0, 220.0, 155.0)
+        time.sleep(0.2)
+        
+        # Move using FK
+        move_fk(ser, 10.0, 20.0, -10.0)
+        time.sleep(0.2)
+
+        # Gripper control
+        suck(ser)
+        time.sleep(0.2)
+        release(ser)
+        time.sleep(0.2)
+        
+        # Conveyor control
+        set_conveyor_speed(ser, 1000)
+        time.sleep(0.2)
+        start_conveyor(ser)
+        time.sleep(0.2)
+        
+        # Home position
+        home(ser)
+        
+        ser.close()
+        
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+# ============================================================================
+# COMMAND REFERENCE TABLE
+# ============================================================================
+
+COMMANDS_REFERENCE = {
+    # Robot Control
+    "home": "home",
+    "stop": "stop",
+    "run": "run",
+    "looprun": "looprun",
+    "move": "move <direction>",
+    
+    # Interpolation
+    "interpolation": "interpolation",
+    "save": "save [x,y,z]",
+    "circle": "circle i,j,clockwise # clockwise: 1 or 0",
+    "loopruncircle": "loopruncircle i,j,clockwise # clockwise: 1 or 0",
+    "bezier": "bezier [x1,y1,z1],[x2,y2,z2]",
+    
+    # Kinematics
+    "IK": "IK [x,y,z]",
+    "FK": "FK [theta1,theta2,theta3]",
+    
+    # Gripper
+    "suck": "suck",
+    "release": "release",
+    
+    # Conveyor
+    "StartStepper": "StartStepper",
+    "StopStepper": "StopStepper",
+    "SetSpeed": "SetSpeed <speed>  # speed: 1-2000 steps/s",
+    "SetAcceleration": "SetAcceleration <accel>  # accel: 1-2000 steps/s²",
+    "ChangeDirection": "ChangeDirection",
+}
+
+
+if __name__ == "__main__":
+    print("Serial Commands Skeleton Script")
+    print("=" * 60)
+    print("\nAvailable Commands:")
+    print("-" * 60)
+    for cmd, format_str in COMMANDS_REFERENCE.items():
+        print(f"  {cmd:20s} -> {format_str}")
+    print("\n" + "=" * 60)
+    print("\nSee function definitions above for detailed usage examples.")

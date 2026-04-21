@@ -1,0 +1,59 @@
+﻿Warning! Ignore unknown configuration option `src_dir` in section [env:esp32dev]
+Processing esp32dev (platform: espressif32; board: esp32dev; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32dev.html
+PLATFORM: Espressif 32 (6.10.0) > Espressif ESP32 Dev Module
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20017.241212+sha.dcc1105b 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+Converting Deltafirm.ino
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- SCServo @ 1.0.1
+|-- ESP32Servo @ 3.2.0
+|-- AccelStepper @ 1.64.0
+Building in release mode
+Compiling .pio\build\esp32dev\src\Deltafirm.ino.cpp.o
+Archiving .pio\build\esp32dev\lib395\libSCServo.a
+Archiving .pio\build\esp32dev\lib91c\libESP32Servo.a
+Indexing .pio\build\esp32dev\lib91c\libESP32Servo.a
+Indexing .pio\build\esp32dev\lib395\libSCServo.a
+Archiving .pio\build\esp32dev\liba8a\libAccelStepper.a
+Indexing .pio\build\esp32dev\liba8a\libAccelStepper.a
+Compiling .pio\build\esp32dev\FrameworkArduino\FunctionalInterrupt.cpp.o
+Compiling .pio\build\esp32dev\FrameworkArduino\HWCDC.cpp.o
+Compiling .pio\build\esp32dev\FrameworkArduino\HardwareSerial.cpp.o
+Compiling .pio\build\esp32dev\FrameworkArduino\IPAddress.cpp.o
+Compiling .pio\build\esp32dev\FrameworkArduino\IPv6Address.cpp.o
+Compiling .pio\build\esp32dev\FrameworkArduino\MD5Builder.cpp.o
+pio.exe : C:/Fresh Start/Deltafirm/Deltafirm.ino:60:1: error: 'T' does not name a type; did you mean 'T9'?
+At line:1 char:1
++ & "$env:USERPROFILE\.platformio\penv\Scripts\pio.exe" run > build_log ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:/Fresh Start/... you mean 'T9'?:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ // Map angle to servo position for ST servos
+ ^
+ T9
+C:/Fresh Start/Deltafirm/Deltafirm.ino: In function 'void moveServosSynchronized(float, float, float)':
+C:/Fresh Start/Deltafirm/Deltafirm.ino:126:73: warning: narrowing conversion of 'targetPosition1' from 'int' to 's16' 
+{aka 'short int'} inside { } [-Wnarrowing]
+     s16 Position[3] = {targetPosition1, targetPosition2, targetPosition3};
+                                                                         ^
+C:/Fresh Start/Deltafirm/Deltafirm.ino:126:73: warning: narrowing conversion of 'targetPosition2' from 'int' to 's16' 
+{aka 'short int'} inside { } [-Wnarrowing]
+C:/Fresh Start/Deltafirm/Deltafirm.ino:126:73: warning: narrowing conversion of 'targetPosition3' from 'int' to 's16' 
+{aka 'short int'} inside { } [-Wnarrowing]
+Compiling .pio\build\esp32dev\FrameworkArduino\Print.cpp.o
+Compiling .pio\build\esp32dev\FrameworkArduino\Stream.cpp.o
+Compiling .pio\build\esp32dev\FrameworkArduino\StreamString.cpp.o
+*** [.pio\build\esp32dev\src\Deltafirm.ino.cpp.o] Error 1
+========================== [FAILED] Took 5.71 seconds ==========================
